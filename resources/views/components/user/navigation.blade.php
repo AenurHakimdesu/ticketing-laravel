@@ -9,7 +9,7 @@
             </div>
         </div>
         <a href="{{ route('home') }}">
-            <img src={{ asset('assets/images/myticket-logo-user.png') }} />
+            <img src={{ asset('assets/images/logo_bengkod.svg') }} />
         </a>
     </div>
     <div class="navbar-center hidden lg:flex">
