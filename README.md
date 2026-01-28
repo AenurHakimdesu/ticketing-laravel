@@ -1,59 +1,192 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Guide Book Project Magang BKPSDM
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## **Langkah-langkah Git**
 
-## About Laravel
+### 1. **Clone repository**
+```bash
+git clone https://github.com/AenurHakimdesu/ticketing-laravel.git
+```
+### 2. **Buat env**
+Jalankan di terminal local vscode
+```bash
+copy .env.example .env
+``` 
+### 3. **Install Composser**
+agar command artisan bisa berjalan
+```bash
+composer install
+```
+### 4. **Generate Application Key**
+membuat kunci enkripsi aplikasi agar aplikasi bisa berjalan
+```bash
+php artisan key:generate
+```
+### 5. **Konfigurasi env**
+```bash
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ticketing_app
+DB_USERNAME=root
+DB_PASSWORD=
+```
+### 6. **Jalankan migrasi**
+```bash
+php artisan migrate
+```
+lalu ketik 
+```bash
+yes
+```
+### 7. **Migrasi seeder**
+```bash
+php artisan db:seed
+```
+### 8. **Install Laravel Breeze**
+```bash
+composer require laravel/breeze --dev
+```
+Setelah itu, jalankan perintah instalasi Breeze:
+```bash
+php artisan breeze:install
+```
+Which Breeze stack would you like to install?
+```bash
+blade
+```
+would you like dark support
+```bash
+yes
+```
+Which testing framework do you prefer?
+```bash
+1
+```
+### 9. **Install Dependency Frontend**
+```bash
+npm install
+```
+Setelah proses instalasi selesai, jalankan build frontend
+```bash
+npm run build
+```
+jika tidak bisa jalankan npm
+```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+### 10. **setting route**
+```bash
+<?php
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+use App\Http\Controllers\User\OrderController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\User\EventController as UserEventController;
+use App\Http\Controllers\User\HomeController;
+use App\Http\Controllers\Admin\HistoriesController;
+use App\Http\Controllers\Admin\TiketController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+// Events
+Route::get('/events/{event}', [UserEventController::class, 'show'])->name('events.show');
 
-## Learning Laravel
+//Orders
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Category Management
+        Route::resource('categories', CategoryController::class);
 
-## Laravel Sponsors
+        // Event Management
+        Route::resource('events', EventController::class);
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+        // Tiket Management 
+        Route::resource('tickets', TiketController::class);
+    
+        // Histories
+        Route::get('/histories', [HistoriesController::class, 'index'])->name('histories.index');
+        Route::get('/histories/{id}', [HistoriesController::class, 'show'])->name('histories.show');
+        });
+});
 
-### Premium Partners
+require __DIR__.'/auth.php';
+```
+### 10. **setting ...\app\Http\Controllers\Auth\AuthenticatedSessionController.php**
+```bash
+<?php
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+namespace App\Http\Controllers\Auth;
 
-## Contributing
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+class AuthenticatedSessionController extends Controller
+{
+    /**
+     * Display the login view.
+     */
+    public function create(): View
+    {
+        return view('auth.login');
+    }
 
-## Code of Conduct
+    /**
+     * Handle an incoming authentication request.
+     */
+    public function store(LoginRequest $request): RedirectResponse
+    {
+            $request->authenticate();
+            $request->session()->regenerate();
+            
+            // Redirect based on user role
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                    return redirect()->intended('/admin');
+            } else {
+                    return redirect()->intended('/');
+            }
+    }
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    /**
+     * Destroy an authenticated session.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
 
-## Security Vulnerabilities
+        $request->session()->invalidate();
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+        $request->session()->regenerateToken();
 
-## License
+        return redirect('/');
+    }
+}
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+### 11. **refresh**
+```bash
+php artisan optimize:clear
+```
+### 12. **Jalankan server**
+```bash
+php artisan serve
+```
